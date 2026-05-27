@@ -32,9 +32,8 @@ Write full context for resuming:
 
 1. session_progress.md
 2. Memory log
-3. job_queue.md
-4. morning_digest.md (if applicable)
-5. Any other project-specific state files
+3. Queue or batch-tracking files (if applicable)
+4. Any other project-specific state files
 
 ## Step 5 — Write relay.md with status: paused (LAST)
 
