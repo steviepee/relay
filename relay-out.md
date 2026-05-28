@@ -28,7 +28,7 @@ Resolve the path: `{current working directory}/standing_orders.md`
   - The exact standing order (what the next Worker should do)
   - All context needed to continue without reading other files
   - A state snapshot for AIL detection (copy of key progress indicators)
-  - **For hold_pos batches specifically:** list every remaining entry by full name/company (e.g. "- Acme Corp — Senior Engineer"), not by count or general direction. The new Worker counts its own completions from zero — it needs an explicit list to work from, not "continue the batch."
+  - **For batches where entries have distinct identifiers:** list every remaining entry by its full name (e.g. "- Entry name / subject"), not by count or general direction. The new Worker counts its own completions from zero, so it needs an explicit list to work from, not "continue the batch."
 
 **AIL check:** Compare the new standing_orders.md content to what was there before this cycle. If unchanged (no progress made), do not relay-out. Instead run /relay-pause and flag the user:
 "Possible AIL (Agentic Infinite Loop) detected. This task may exceed the token budget. Progress saved. Stop workflow?"
