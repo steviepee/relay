@@ -4,20 +4,37 @@ A lightweight two-agent handoff system for Claude Code. Lets a Worker agent pass
 
 ---
 
+## Installation
+
+Relay ships as a Claude Code plugin. In any Claude Code session:
+
+```
+/plugin marketplace add steviepee/relay
+/plugin install relay@relay-marketplace
+```
+
+The `/relay-*` commands are then available in every project.
+
+**Verify the install:** run `/relay-test` — it processes a synthetic 4-item batch with no setup and no lasting artifacts. To exercise the full two-window handoff, open two Claude Code windows from the same directory, run `/relay-standby` in one, and `/relay-test --relay` in the other.
+
+---
+
 ## Required Permissions
 
-Add these to your `~/.claude/settings.json` under `permissions.allow`. They are global — the relay skills work in any project, so permissions belong in the user settings file, not a project file.
+Add these to your `~/.claude/settings.json` under `permissions.allow`. They are global — the relay commands work in any project, so permissions belong in the user settings file, not a project file.
 
 ```json
-"Bash(bash ~/.claude/commands/relay_watcher.sh)",
+"Bash(bash */scripts/relay_watcher.sh)",
 "Bash(sed -i*)"
 ```
+
+The watcher script lives inside the plugin's install directory (under `~/.claude/plugins/`), so the rule uses a wildcard rather than a fixed path. Alternatively, skip editing settings entirely: the first time `/relay-standby` launches the watcher, approve the permission prompt with "don't ask again" and Claude Code records the exact rule for you.
 
 **What each covers:**
 
 | Permission | Used by | Purpose |
 |---|---|---|
-| `Bash(bash ~/.claude/commands/relay_watcher.sh)` | relay-standby | Background polling process that watches relay.md for the wakeup signal |
+| `Bash(bash */scripts/relay_watcher.sh)` | relay-standby | Background polling process that watches relay.md for the wakeup signal |
 | `Bash(sed -i*)` | relay-out | Flips the `status:` line in relay.md in-place. The Write tool cannot be used here — it does an atomic rename that generates a filesystem event on the temp file, not on relay.md itself. |
 
 Write, Edit, and Read tool calls made by the relay skills are typically auto-approved and do not require explicit permission entries.
@@ -51,8 +68,9 @@ The 20-second poll interval is the watcher script's cadence. The 2-3 minute inte
 | relay-check | `/relay-check` | After each completion, check if the threshold is reached and fire relay-out if so. |
 | relay-pause | `/relay-pause` | Save progress and stop without handing off. Resume later with /relay-in. |
 | relay-halt | `/relay-halt` | Save progress and stop the workflow entirely. Prompts for confirmation. |
+| relay-test | `/relay-test` | Self-contained end-to-end test: a synthetic 4-item batch with no queue dependencies. Supports `--relay`. |
 
-All skills live in `~/.claude/commands/` and are available globally in any project.
+The commands are installed by the plugin and available globally in any project. If another plugin defines a command with the same name, use the namespaced form (`/relay:relay-standby`).
 
 ---
 
@@ -62,7 +80,7 @@ All skills live in `~/.claude/commands/` and are available globally in any proje
 
 | File | Written by | Purpose |
 |------|-----------|---------|
-| `relay.md` | relay-out, relay-pause | Wakeup signal and status. `status: ready` wakes the Sleeper. |
+| `relay.md` | relay-out, relay-pause, relay-halt | Wakeup signal and status. `status: ready` wakes the Sleeper. |
 | `relay_state.md` | relay skill (header) + your command (body) | Progress contract between Worker and Sleeper. |
 | `standing_orders.md` | relay-out, relay-pause | Full context for the next agent to resume without reading other files. |
 | `sleeper.flag` | relay-standby | Signals a Sleeper is parked. Worker checks this before firing relay-out. |
