@@ -1,0 +1,6 @@
+{
+  "name": "relay",
+  "description": "Two agent handoff system for passing batch work.",
+  "version": "0.1.0",
+  "author": { "name": "Stefan Poole" }
+}

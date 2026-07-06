@@ -1,0 +1,11 @@
+{
+  "name": "relay-marketplace",
+  "owner": {"name": "Stefan Poole"},
+  "plugins": [
+    {
+      "name": "relay",
+      "source": "./",
+      "description": "Worker/Sleeper handoff skills for batch tasks"
+    }
+  ]
+}
