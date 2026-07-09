@@ -1,5 +1,6 @@
 {
   "name": "relay-marketplace",
+  "description": "Relay: two-agent Worker/Sleeper handoff skills for long-running batch tasks in Claude Code.",
   "owner": {"name": "Stefan Poole"},
   "plugins": [
     {
